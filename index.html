@@ -27,8 +27,44 @@
 <body>
 	<div class="reveal">
 		<div class="slides">
-			<section>Slide 1</section>
-			<section>Slide 2</section>
+			<section data-markdown>
+				# Page title 1
+				## Page title 2
+				### Page title 3
+				#### Page title 4
+
+				**_黑体的文字_**
+
+				- [x] Finish my changes
+				- [ ] Push my commits to GitHub
+				- [ ] \(Open) a pull request
+
+				sdfs
+
+				A paragraph with some text and a [link](http://hakim.se).
+			</section>
+			<section>
+				<section>
+					<p>After 2 seconds the first fragment will be shown.</p>
+					<p class="fragment" data-autoslide="10000">After 10 seconds the next fragment will be shown.</p>
+					<p class="fragment">Now, the fragment is displayed for 2 seconds before the next slide is shown.</p>
+				</section>
+				<section>
+					Vertical Slide 1
+				</section>
+				<section>
+					Vertical Slide 2
+				</section>
+			</section>
+			<section>
+				Slide 2
+				<p>There's a <a data-preview-link href="https://github.com/hakimel/reveal.js#speaker-notes">speaker view</a>. It
+					includes a timer,
+					preview of the upcoming slide as well as your speaker notes.</p>
+			</section>
+			<section data-background-iframe="https://bing.com" data-background-interactive>
+				<h2>Iframe</h2>
+			</section>
 		</div>
 	</div>
 
@@ -39,15 +75,33 @@
 		// - https://github.com/hakimel/reveal.js#configuration
 		// - https://github.com/hakimel/reveal.js#dependencies
 		Reveal.initialize({
+			controls: true,
+			slideNumber: true,
+			hash: true,
+			navigationMode: 'default',
+			transition: 'slide', // none/fade/slide/convex/concave/zoom
+			transitionSpeed: 'default', // default/fast/slow
+			backgroundTransition: 'fade', // none/fade/slide/convex/concave/zoom
+			embedded: false,
+			hideAddressBar: true,
+			previewLinks: false,
+
+			//width: 960,
+			//height: 700,
+			margin: 0,
+
 			dependencies: [
 				{ src: 'plugin/markdown/marked.js' },
 				{ src: 'plugin/markdown/markdown.js' },
 				{ src: 'plugin/notes/notes.js', async: true },
 				{ src: 'plugin/highlight/highlight.js', async: true },
 				{ src: 'socket.io/socket.io.js', async: true },
+				{ src: 'plugin/notes-server/client.js', async: true },
+				{ src: 'socket.io/socket.io.js', async: true },
 				{ src: 'plugin/notes-server/client.js', async: true }
 			]
-		});
+		})
+
 	</script>
 </body>
 
