@@ -8,6 +8,10 @@
 
 	console.log( 'View slide notes at ' + window.location.origin + '/notes/' + socketId );
 
+	if (drawNotesUrl){
+		drawNotesUrl(window.location.origin + '/notes/' + socketId )
+	}
+
 	window.open( window.location.origin + '/notes/' + socketId, 'notes-' + socketId );
 
 	/**

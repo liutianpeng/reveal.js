@@ -28,15 +28,236 @@
 	<div class="reveal">
 		<div class="slides">
 
+			<section>
+				<section>
+					<h2>Go/AppServer分享</h2> 
+				</section>
+				<section>
+					<h1>Speaker notes</h1>
+					<div id="qrcode"></div>
+				</section>
+			</section>
+			
 			<section data-markdown>
-				## Go/AppServer分享
+				## Go
+				#### Go特性介绍，和对GO的一些理解
+				- Go的学习资源
+				- Go的特性
 			</section>
 
 			<section data-markdown>
-				### AppServer的主要功能
+				## Go的学习资源
+				- [The Go Programming Language(Go语言圣经)](https://books.studygolang.com/gopl-zh/)
+				- [The Way To Go(中文版)](https://github.com/Unknwon/the-way-to-go_ZH_CN)
+				- [Go by Example(中文版)](https://books.studygolang.com/gobyexample/)
+				- [golang.org](https://golang.org/doc)
+			</section>
+			
+			<section data-markdown>
+				### Go的内存模型
+				- 支持GC,开发者不关心内存分配位置
+				- 初始化
+					- 包级别init函数 main.main函数的开始发生在所有init函数结束之后
+				- goroutine的创建与销毁
+					<pre>
+						<code>
+						func hello() {
+							a := "hello, world"
+							go func() { a = "hello" }()
+							print(a)
+						}
+						</code>
+					</pre>
+			</section>
+
+			<section data-markdown>
+				### Go的错误处理
+				- error
+				- panic
+					- 发生panic的func认为程序不可运行了
+					- 可以通过recover继续恢复运行
+					- 没有revocer的panic可以导致程序退出
+				- fatal error
+					- 进程级别的错误
+			</section>
+
+			<section data-markdown>
+				### go
+				- 使用go关键字启动(轻量级)线程
+				- GPM线程模型
+				- 一个goroutine基础内存消耗8k(十万个不到900M)
+				- 调度消耗很小(百万个运行没有压力)
+				- 创建goroutine时间消耗大概几十纳秒
+				<pre>
+					<code>
+					go func() { a = "hello" }()
+					</code>
+				</pre>
+			</section>
+
+			<section data-markdown>
+				### channel
+				- CSP:不要通过共享内存来通信，而应通过通信来共享内存
+				- 无缓冲的channel与带缓冲的channel
+				- 读取一个关闭的chan会立刻返回，写入一个关闭的chan会panic;chan会被自动回收，一般不用显示关闭
+				<pre>
+					<code>
+					ch := make(chan int, 1)
+					ch <- 100
+					b,ok := <- ch
+					</code>
+				</pre>
+			</section>
+
+			<section>
+				<h3> function</h3>
+				函数是go语言的一等公民
+				<section data-markdown>
+					- "一等公民":是说着函数可以像其他普通类型一样赋值、作为函数的参数、作为函数的返回值等
+					- 匿名函数
+					<pre>
+						<code>
+						func hello(){
+							go func() { fmt.Println("??") }()
+						}
+						//hello.func1
+						</code>
+					</pre>
+				</section>
+
+				<section>
+					<br/>
+					<br/>
+					<br/>
+					· 闭包<br>
+					记住其上下文环境中所有定义过的变量的函数<pre style="padding: 0px; margin-top: 0px; margin-bottom: 0px;">
+						<code style="padding: 0px; margin-top: 0px;" class="go">func hello(a int) {
+	a = a * 100
+	go func() {
+		fmt.Println(a)
+	}()
+}
+hello(1)</code>
+					</pre>
+				</section>
+
+				<section data-markdown>
+					- 延时函数
+					<pre>
+						<code>
+						func hello() int{
+							n:=10
+							defer func() { n=100 }()
+							return n
+						}
+						//hello.func1会在hello结束时运行(return以后)
+						</code>
+					</pre>
+				</section>
+
+				<section>
+					<br/>
+					<br/>
+					<br/>
+					· 高阶函数<pre style="padding: 0px; margin-top: 0px; margin-bottom: 0px;">
+						<code style="padding: 0px; margin-top: 0px;" class="go">func adder() func(int) int {
+	sum := 0
+	return func(x int) int {
+		sum += x
+		return sum
+	}
+}
+f := adder()
+f(10)</code>
+					</pre>
+				</section>
+
+				<section>
+					<br/>
+					<br/>
+					<br/>
+					· 缓存函数(科里化)<pre style="padding: 0px; margin-top: 0px;">
+						<code style="padding: 0px; margin-top: 0px;" class="go">func add(a int) func(int) int {
+  return func(b int) int {
+    return a+b
+  }
+}
+f := add(1)
+f(10)
+//add的返回值是一个函数</code>
+					</pre>
+				</section>
+			</section>
+
+			<section data-markdown>
+				### function
+				- 多值返回
+				- 方法(值传递,指针传递)
+				- 没有重载
+				- 没有默认参数
+			</section>
+
+			<section>
+				<h3>struct</h3>
+				<pre><code>type AA struct {
+	a int
+}
+type BB struct {
+	AA
+	b int `json:"b"`
+}
+func (bb *BB) Dump() {
+	fmt.Printf("%v", bb)
+}</code></pre>
+			</section>
+
+			<section data-markdown>
+				### interface
+				- 接口定义了一组方法，但是这些方法不包含（实现）代码
+				- 接口里也不能包含变量
+				- interface{}与void*
+				- 并没有模版
+			</section>
+
+			<section data-markdown>
+				### duck typing
+				- 如果行鸭子一样走路，像鸭子一样呱呱叫，那它就是一只鸭子
+				- Go 语言不是一种 “传统” 的面向对象编程语言：它里面没有类和继承的概念
+				- 类型不需要显式声明它实现了某个接口：接口被隐式地实现
+				- 多个类型可以实现同一个接口,一个类型也可以实现多个接口
+			</section>
+
+			<section data-markdown>
+				### “面向对象”
+				- 封装：和别的 OO 语言有 4 个或更多的访问层次相比，Go 把它简化为了 2 层
+				- 继承：用组合实现：内嵌一个（或多个）包含想要的行为（字段和方法）的类型
+				- 多态：用接口实现：某个类型的实例可以赋给它所实现的任意接口类型的变量
+			</section>
+
+			<section data-markdown>
+				### 其他特性
+				- import
+				- reflect
+				- slice
+				- map
+				- ast
+				- 条件编译
+				- test
+			</section>
+
+			<section data-markdown>
+				### 小结
+				- go是一个强大的语言
+				- go很像“C”，是一个加强版的C
+				- go有自己的规则，不能想当然
+				- 并发很开心，但是也很危险
+			</section>
+
+			<section data-markdown>
+				## AppServer
+				#### 不是社区服务器的经验，是我遇到问题的解决思路
 				- 朋友圈
-				- 游戏助手
-				- 聊天工具
+				- 游戏助手/聊天工具
 			</section>
 
 			<section data-markdown>
@@ -232,55 +453,41 @@
 			</section>
 
 			<section data-markdown>
-				### 聊天处理-离线消息的处理
+				### 聊天处理-离线消息
+				- 群聊消息
+					- 所有用户公用一个群聊天队列
+					- App客户端维护lastUniuqeID
+				- 私聊消息
+					- 尝试用消息队列通知App客户端
+					- 对于通知失败的消息，加入私聊回话离线列表
+				- 现在App服务器的消息队列是在线程间通讯，如果需要分布多台主机，也可以改成多进程的消息队列模型
 			</section>
 
 			<section data-markdown>
-				### 聊天处理-离线消息的处理
+				### 但是
+				- 消息队列解耦也会造成信息的缺失
+					- 生产者离线，消费者不知道怎么回事
+					- 消费者离线，生产者也不会受到相应事件
+				- 消息队列有可能成为系统的瓶颈
+				- 消息队列对消息处理顺序不一定提供保证
 			</section>
-
 
 			<section data-markdown>
-				## App服务器设计----------------------
+				### 小结
+				- 消息队列可以解耦信息的生产者和消费者
+				- 消息队列可能成为系统的瓶颈
+				- 消息队列选型要根据具体应用考量
 			</section>
-
 
 			<section data-markdown>
-				<script type="text/template">
-# 无状态的服务
-- 对单次请求的处理，服务器没有依赖的上下文<!-- .element: class="fragment" data-fragment-index="1" -->
-- 所以请求可以并行，每次请求都可以是一个goroutine<!-- .element: class="fragment" data-fragment-index="2" -->
-- 不依赖上下文不是没有数据，只是数据都在数据库，服务器程序只负责操作数据<!-- .element: class="fragment" data-fragment-index="3" -->
-- 所以无状态的只是AppServer<!-- .element: class="fragment" data-fragment-index="4" -->
-				</script>
-			</section>
-			<section>
-				<section>
-					<p>After 2 seconds the first fragment will be shown.</p>
-					<p class="fragment" data-autoslide="10000">After 10 seconds the next fragment will be shown.</p>
-					<p class="fragment">Now, the fragment is displayed for 2 seconds before the next slide is shown.</p>
-				</section>
-				<section>
-					Vertical Slide 1
-				</section>
-				<section>
-					Vertical Slide 2
-				</section>
-			</section>
-			<section>
-				Slide 2
-				<p>There's a <a data-preview-link href="https://github.com/hakimel/reveal.js#speaker-notes">speaker
-						view</a>. It
-					includes a timer,
-					preview of the upcoming slide as well as your speaker notes.</p>
-			</section>
-			<section data-background-iframe="https://bing.com" data-background-interactive>
-				<h2>Iframe</h2>
+				# 总结
 			</section>
 		</div>
 	</div>
 
 	<script src="js/reveal.js"></script>
+	<script src="js/NoSleep.js"></script>
+	<script src="js/qrcode.js"></script>
 
 	<script>
 		// More info about config & dependencies:
@@ -313,6 +520,24 @@
 				{ src: 'plugin/notes-server/client.js', async: true }
 			]
 		})
+
+		var noSleep = new NoSleep();
+		noSleep.enable();
+
+		var qrcode = new QRCode('qrcode', {
+			text: 'your content',
+			width: 256,
+			height: 256,
+			colorDark : '#000000',
+			colorLight : '#ffffff',
+			correctLevel : QRCode.CorrectLevel.H
+			});
+
+		var drawNotesUrl = function(notesUrl){
+			// 使用 API
+			qrcode.clear();
+			qrcode.makeCode(notesUrl);
+		}
 
 	</script>
 </body>
