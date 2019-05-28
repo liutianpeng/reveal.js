@@ -281,6 +281,7 @@
 		<div id="current-slide"></div>
 		<div id="upcoming-slide"><span class="overlay-element label"> <br/> 下一页的内容</span></div>
 		<div id="speaker-controls">
+			<input type="button" id="toggle" value="Wake Lock is disabled" />
 			<div class="speaker-controls-time">
 				<h4 class="label">Time <span class="reset-button">Click to Reset</span></h4>
 				<div class="clock">
@@ -304,6 +305,25 @@
 
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="/plugin/markdown/marked.js"></script>
+		<script src="/js/NoSleep.js"></script>
+		<script>
+			var noSleep = new NoSleep();
+
+			var wakeLockEnabled = false;
+			var toggleEl = document.querySelector("#toggle");
+			toggleEl.addEventListener('click', function() {
+				if (!wakeLockEnabled) {
+				noSleep.enable(); // keep the screen on!
+				wakeLockEnabled = true;
+				toggleEl.value = "防止休眠开启";
+				} else {
+				noSleep.disable(); // let the screen turn off.
+				wakeLockEnabled = false;
+				toggleEl.value = "Wake Lock is disabled";
+				}
+			}, false);
+		</script>
+
 
 		<script>
 		(function() {

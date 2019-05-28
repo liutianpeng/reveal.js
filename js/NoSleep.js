@@ -105,6 +105,7 @@ var NoSleep = function () {
     } else {
       // Set up no sleep video element
       this.noSleepVideo = document.createElement('video');
+      console.log(this.noSleepVideo )
 
       this.noSleepVideo.setAttribute('muted', '');
       this.noSleepVideo.setAttribute('title', 'No Sleep');
@@ -150,7 +151,7 @@ var NoSleep = function () {
           }
         }, 15000);
       } else {
-        this.noSleepVideo.play();
+        this.noSleepVideo.play()
       }
     }
   }, {
