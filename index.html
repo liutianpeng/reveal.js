@@ -30,10 +30,10 @@
 
 			<section>
 				<section>
-					<h2>Go/AppServer分享</h2> 
+					<h2>Go/社区服务器分享</h2> 
 				</section>
 				<section>
-					<h1>Speaker notes</h1>
+					<h1>Speaker Notes</h1>
 					<div id="qrcode"></div>
 					<input type="button" id="toggle" value="Wake Lock is disabled" />
 				</section>
@@ -44,14 +44,29 @@
 				#### Go特性介绍，和对GO的一些理解
 				- Go的学习资源
 				- Go的特性
+
+				Note:
+					go很像“C”，是一个加强版的C
 			</section>
 
+			<section>
 			<section data-markdown>
 				## Go的学习资源
 				- [The Go Programming Language(Go语言圣经)](https://books.studygolang.com/gopl-zh/)
 				- [The Way To Go(中文版)](https://github.com/Unknwon/the-way-to-go_ZH_CN)
 				- [Go by Example(中文版)](https://books.studygolang.com/gobyexample/)
 				- [golang.org](https://golang.org/doc)
+				
+				Note:
+				关于Go有很多开源书籍，这里只是介绍一部分
+				Go的官网是被墙的
+			</section>
+				<section data-background-iframe="https://books.studygolang.com/gopl-zh">
+				</section>
+				<section data-background="#dddddd" data-background-iframe="https://books.studygolang.com/gobyexample/">
+				</section>
+				<section data-background-iframe="https://www.cntofu.com/book/14/readme.html">
+				</section>
 			</section>
 			
 			<section data-markdown>
@@ -65,49 +80,88 @@
 						func hello() {
 							a := "hello, world"
 							go func() { a = "hello" }()
+							go func() { a = "world" }()
 							print(a)
 						}
 						</code>
 					</pre>
+				Note:
+				最初的版本Go的GC速度比较慢，但是现在的版本已经很快了；
+				现在的GC仍然由STW，如果零碎比较多，还是会有几十ms的卡顿
 			</section>
 
 			<section data-markdown>
+			<script type="text/template">
 				### Go的错误处理
-				- error
-				- panic
+				- error<!-- .element: class="fragment" data-fragment-index="1" -->
+					- Error() string
+				- panic<!-- .element: class="fragment" data-fragment-index="2" -->
 					- 发生panic的func认为程序不可运行了
 					- 可以通过recover继续恢复运行
 					- 没有revocer的panic可以导致程序退出
-				- fatal error
+				- fatal error<!-- .element: class="fragment" data-fragment-index="3" -->
 					- 进程级别的错误
+			</script>
+				Note:
+					Go内置了error借口类型描述错误。和C惯用int描述错误不同，Go的error需要定义一个String类型的错误描述；一般使用常量描述特定的错误；
+					error一般是应用层的错误，对于一些更加严重错误，用panic；类似c++的try，catch，但是panic是函数级的，不是代码块级的
+					fatal error一般有out of memory，concurrent map writes，all goroutines are asleep - deadlock!
 			</section>
 
 			<section data-markdown>
+			<script type="text/template">
 				### go
-				- 使用go关键字启动(轻量级)线程
-				- GPM线程模型
-				- 一个goroutine基础内存消耗8k(十万个不到900M)
-				- 调度消耗很小(百万个运行没有压力)
-				- 创建goroutine时间消耗大概几十纳秒
+				- 使用go关键字启动(轻量级)线程<!-- .element: class="fragment" data-fragment-index="1" -->
+					- GPM线程模型
+				- goroutine代价很低<!-- .element: class="fragment" data-fragment-index="3" -->
+					- 一个goroutine基础内存消耗8k(十万个不到900M)
+					- 调度消耗很小(百万个运行没有压力)
+					- 创建goroutine时间消耗大概几十纳秒
+				- 创建gorountine的语法也很简单<!-- .element: class="fragment" data-fragment-index="5" -->
 				<pre>
 					<code>
 					go func() { a = "hello" }()
 					</code>
 				</pre>
+			</script>
+				Note:
+				M 内核级线程,goroutine就是跑在M之上
+
+				G gorountine,Go的运行单位
+
+				P Processor,处理器，可以通过runtime.GOMAXPROCS(N)设置个数
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+				### 但是
+				- goroutine再多也不可能突破CPU的算力限制,100个goroutine并不意味着100倍的速度<!-- .element: class="fragment" data-fragment-index="1" -->
+				- 大量的goroutine如果对相同的数据操作，也会有大量的消耗<!-- .element: class="fragment" data-fragment-index="2" -->
+					- 比如1堆goroutine同时监听一个channel
+				- goroutine对于临界资源的访问需要加锁<!-- .element: class="fragment" data-fragment-index="3" -->
+					- 加锁就要小心死锁
+				- C++内存会泄露，Go的goroutine也有同样的隐患<!-- .element: class="fragment" data-fragment-index="4" -->
+				</script>
+				Note:
+					goroutine只是CPU运算能力的一种分配方式
 			</section>
 
 			<section data-markdown>
 				### channel
 				- CSP:不要通过共享内存来通信，而应通过通信来共享内存
 				- 无缓冲的channel与带缓冲的channel
-				- 读取一个关闭的chan会立刻返回，写入一个关闭的chan会panic;chan会被自动回收，一般不用显示关闭
+				- 读取一个关闭的chan会立刻返回，写入一个关闭的chan会panic
+				- 没有人引用的chan即使没有显示关闭，会被回收
 				<pre>
 					<code>
 					ch := make(chan int, 1)
 					ch <- 100
 					b,ok := <- ch
+					close(ch)
 					</code>
 				</pre>
+				Note:
+					go一般认为由chan的写入方调用关闭函数
 			</section>
 
 			<section>
@@ -185,8 +239,11 @@ f(10)</code>
 }
 f := add(1)
 f(10)
-//add的返回值是一个函数</code>
+//add的返回值是一个存储了参数a的函数</code>
 					</pre>
+					<aside class="notes">
+					是把接受多个参数的函数变换成接受一个单一参数(最初函数的第一个参数)的函数，并且返回接受余下的参数且返回结果的新函数
+					</aside>
 				</section>
 			</section>
 
@@ -205,7 +262,7 @@ f(10)
 }
 type BB struct {
 	AA
-	b int `json:"b"`
+	b int `json:"boy"`
 }
 func (bb *BB) Dump() {
 	fmt.Printf("%v", bb)
@@ -213,16 +270,18 @@ func (bb *BB) Dump() {
 			</section>
 
 			<section data-markdown>
+			<script type="text/template">
 				### interface
-				- 接口定义了一组方法，但是这些方法不包含（实现）代码
-				- 接口里也不能包含变量
-				- interface{}与void*
-				- 并没有模版
+				- 接口定义了一组方法，但是这些方法不包含（实现）代码<!-- .element: class="fragment" data-fragment-index="1" -->
+				- 接口里也不能包含变量<!-- .element: class="fragment" data-fragment-index="1" -->
+				- interface{}与void*<!-- .element: class="fragment" data-fragment-index="2" -->
+				- GO并没有模版,只能用interface模拟一些泛型的功能<!-- .element: class="fragment" data-fragment-index="2" -->
+			</script>
 			</section>
 
 			<section data-markdown>
 				### duck typing
-				- 如果行鸭子一样走路，像鸭子一样呱呱叫，那它就是一只鸭子
+				- 如果像鸭子一样走路，像鸭子一样呱呱叫，那它就是一只鸭子
 				- Go 语言不是一种 “传统” 的面向对象编程语言：它里面没有类和继承的概念
 				- 类型不需要显式声明它实现了某个接口：接口被隐式地实现
 				- 多个类型可以实现同一个接口,一个类型也可以实现多个接口
@@ -230,7 +289,7 @@ func (bb *BB) Dump() {
 
 			<section data-markdown>
 				### “面向对象”
-				- 封装：和别的 OO 语言有 4 个或更多的访问层次相比，Go 把它简化为了 2 层
+				- 封装：C++有3个访问层次，Go把它简化为了2层
 				- 继承：用组合实现：内嵌一个（或多个）包含想要的行为（字段和方法）的类型
 				- 多态：用接口实现：某个类型的实例可以赋给它所实现的任意接口类型的变量
 			</section>
@@ -243,7 +302,8 @@ func (bb *BB) Dump() {
 				- map
 				- ast
 				- 条件编译
-				- test
+				- test/benchmark
+				- cgo
 			</section>
 
 			<section data-markdown>
@@ -255,8 +315,8 @@ func (bb *BB) Dump() {
 			</section>
 
 			<section data-markdown>
-				## AppServer
-				#### 不是社区服务器的经验，是我遇到问题的解决思路
+				## 社区服务器
+				#### 不是经验，是遇到问题的解决思路
 				- 朋友圈
 				- 游戏助手/聊天工具
 			</section>
@@ -271,7 +331,7 @@ func (bb *BB) Dump() {
 				<!-- .element: class="fragment" data-fragment-index="1" -->
 				- 不依赖上下文不是没有数据，只是数据都在数据库，服务器程序只负责操作数据
 				<!-- .element: class="fragment" data-fragment-index="2" -->
-				- 所以无状态的只是AppServer，状态在MongoDB和Redis
+				- 所以对于社区服务器，无状态的只是程序，状态在MongoDB和Redis
 				<!-- .element: class="fragment" data-fragment-index="3" -->
 			</section>
 
@@ -280,15 +340,6 @@ func (bb *BB) Dump() {
 				- 用户之间、请求之间没有太多的数据关联
 				- 请求之间可以并行，每次请求都可以是一个线程
 				- 由于数据都在数据库，所以程序重启产生的影响小
-			</section>
-
-			<section data-markdown>
-				### Gin
-				- Gin是用Go语言实现的HTTP框架
-				- App服务器中使用Gin作为Http服务基础框架
-				- 使用Gin的中间件设置Header和权限验证
-				- 使用Gin的RouterGroup管理api
-				- 有关gin的更多信息可以在[Github](https://github.com/gin-gonic/gin)找到
 			</section>
 
 			<section data-markdown>
@@ -303,10 +354,14 @@ func (bb *BB) Dump() {
 			</section>
 
 			<section data-markdown>
+			<script type="text/template">
 				### 但是
-				- 并不是所有可以完全独立的请求，都能够并发
-				- 如果两个请求对同一个数据操作，就有可能产生竞争访问
-				- 例如:对动态点赞
+				- 并不是所有无状态的请求，都能够完全并发<!-- .element: class="fragment" data-fragment-index="1" -->
+				- 如果两个请求对同一个数据操作，就有可能产生竞争访问<!-- .element: class="fragment" data-fragment-index="1" -->
+				- 例如:对动态点赞<!-- .element: class="fragment" data-fragment-index="1" -->
+					- 记录点赞的人（记录点赞的时间）
+					- 记录点赞数量
+			</script>
 			</section>
 
 			<section data-markdown>
@@ -327,8 +382,8 @@ func (bb *BB) Dump() {
 			</section>
 
 			<section data-markdown>
-				### 对动态点赞
-				- 把竞争访问的部分用数据库的_原子操作_代替
+				### 方案1
+				- 把竞争访问的部分用数据库的_原子操作_ 代替
 					* 例如Redis，对于每次操作都是原子性的
 					* 对于某个动态的点赞列表其实就是一个Set数据结构（用momentID做key）
 					* 把点赞操作转化为SADD操作
@@ -336,29 +391,35 @@ func (bb *BB) Dump() {
 			</section>
 
 			<section data-markdown>
-				### 对动态点赞
+				### 方案2
 				- 用_线程池_ 使操作串行化，对于相同动态的点赞操作不并发执行
 					* 启动N个线程
-					* 利用_momentID_ **mod** _N_ 将每个点赞动态操作布到不同的线程中
+					* 利用_momentID_ **mod** _N_ 将每个点赞动态操作分布到不同的线程中
 					* 保证相同动态的点赞操作在同一线程中执行
 			</section>
 
 			<section data-markdown>
-				### 对动态点赞
-				- 用_锁_ 使操作串行化，对于相同动态的点赞操作不并发执行
+				### 方案3
+				- 用_锁_ 使操作串行化，对相同动态的并发点赞操作不并行
 					* 使用Go内置的组件_sync.mutex_ 
 					* 为了减少锁的粒度，可以做一组（N个）mutex
 					* 使用_momentID_ **mod** _N_  选择mutex
+				<pre>
+				<code>
+					mutex[id % N].Lock()
+					defer mutex[id % N].UnLock()
+				</code></pre>
 			</section>
 
 			<section data-markdown>
-				### 对动态点赞
+				### 进程/线程
 				- 以上的两种操作串行化是在同一个进程中进行
 				- 为了在不同进程中也保证操作没有问题
 					* 将请求分配到不同的进程是需要遵守一定的规则（也就是引入一个可以负载均衡的Gateway）
 					* 使用分布式锁
 			</section>
 
+			<section>
 			<section data-markdown>
 				### 分布式锁
 				- 使用一致性协议实现
@@ -370,35 +431,43 @@ func (bb *BB) Dump() {
 				- 使用数据库原子操作实现
 					- redis的SET操作的NX属性
 			</section>
+			<section data-background-iframe="https://raft.github.io/" data-background-interactive></section>
+			<section data-background-iframe="http://thesecretlivesofdata.com/raft/" data-background-interactive></section>
+			<section data-background-iframe="https://github.com/lni/dragonboat" data-background-interactive></section>
+			</section>
 
+			<section>
 			<section data-markdown>
 				### 基于redis的分布式锁
-				- 使用SET操作的NX属性: SET if Not eXists(还有一个方法叫SETNX)
-				- [Redis官网文档的介绍](https://redis.io/topics/distlock)
+				- 使用SET操作的NX属性: SET if Not eXists
 				<pre>
 					<code class="lua">
-						//加锁: 返回1标识获取锁，返回0标识资源被别人锁定
-						SET lock.foo MyRandomData NX PX 5000
-						//解锁: 使用lua脚本，保证解除的是自己的锁定
-						if redis.call("GET",KEYS[1]) == ARGV[1]
-						then
-							return redis.call("DEL",KEYS[1])
-						else
-							return 0
-						end
-						EVAL ...script... 1 lock.foo MyRandomData
+					//加锁: 返回1标识获取锁，0标识资源被别人锁定
+					SET lock.foo MyRandomData NX PX 5000
+					//解锁: 使用lua脚本，保证解除的是自己的锁定
+					if redis.call("GET",KEYS[1]) == ARGV[1]
+					then
+						return redis.call("DEL",KEYS[1])
+					else
+						return 0
+					end
+					EVAL ...script... 1 lock.foo MyRandomData
 					</code>
 				</pre>
 			</section>
+			<section data-background-iframe="https://redis.io/topics/distlock" data-background-interactive></section>
+			</section>
 
 			<section data-markdown>
+			<script type="text/template">
 				### 为每个新“话题”分配唯一ID
-				- 获取话题的唯一ID，成功择返回
-				- 通过Incr指令获取一个唯一ID作为备胎
-				- 通过SetNX方式设置备胎
-				- 如果成功，则备胎转正
-				- 如果失败，则重新获取话题的唯一ID
-				- 代价：可能有备胎被浪费
+				- 获取话题的唯一ID，成功择返回<!-- .element: class="fragment" data-fragment-index="1" -->
+				- 通过Incr指令获取一个唯一ID作为备胎<!-- .element: class="fragment" data-fragment-index="1" -->
+				- 通过SetNX方式设置备胎<!-- .element: class="fragment" data-fragment-index="1" -->
+				- 如果成功，则备胎转正<!-- .element: class="fragment" data-fragment-index="1" -->
+				- 如果失败，则重新获取话题的唯一ID<!-- .element: class="fragment" data-fragment-index="1" -->
+				- 代价：可能有备胎被浪费<!-- .element: class="fragment" data-fragment-index="2" -->
+			</script>
 			</section>
 
 			<section data-markdown>
@@ -465,17 +534,19 @@ func (bb *BB) Dump() {
 			</section>
 
 			<section data-markdown>
+			<script type="text/template">
 				### 但是
-				- 消息队列解耦也会造成信息的缺失
+				- 消息队列解耦也会造成信息的缺失<!-- .element: class="fragment" data-fragment-index="1" -->
 					- 生产者离线，消费者不知道怎么回事
-					- 消费者离线，生产者也不会受到相应事件
-				- 消息队列有可能成为系统的瓶颈
-				- 消息队列对消息处理顺序不一定提供保证
+					- 消费者离线，生产者也不会收到相应事件
+				- 消息队列有可能成为系统的瓶颈<!-- .element: class="fragment" data-fragment-index="1" -->
+				- 消息队列对消息处理顺序不一定提供保证<!-- .element: class="fragment" data-fragment-index="1" -->
+			</script>
 			</section>
 
 			<section data-markdown>
 				### 小结
-				- 消息队列可以解耦信息的生产者和消费者
+				- 消息队列可以解耦信息
 				- 消息队列可能成为系统的瓶颈
 				- 消息队列选型要根据具体应用考量
 			</section>
@@ -504,7 +575,7 @@ func (bb *BB) Dump() {
 			backgroundTransition: 'fade', // none/fade/slide/convex/concave/zoom
 			embedded: false,
 			hideAddressBar: true,
-			previewLinks: false,
+			previewLinks: true,
 
 			//width: 960,
 			//height: 700,
