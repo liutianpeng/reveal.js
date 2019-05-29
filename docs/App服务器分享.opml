@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+	<head>
+		<dateCreated>Wed May 29 2019 14:23:59 GMT+0800 (中国标准时间)</dateCreated>
+		<dateModified>Wed May 29 2019 14:23:59 GMT+0800 (中国标准时间)</dateModified>
+	</head>
+	<body>
+		<outline text="Go/App服务器分享">
+			<outline text="Go">
+				<outline text="Go资源">
+					<outline text="Go语言圣经(The Go Programming Language)[https://books.studygolang.com/gopl-zh/]"></outline>
+					<outline text="Go by Example中文版 [https://books.studygolang.com/gobyexample/]"></outline>
+					<outline text="Reference中文版[http://docscn.studygolang.com/doc/#references]"></outline>
+					<outline text="FAQ[https://golang.org/doc/faq]"></outline>
+					<outline text="The Way To Go(中文版)[https://github.com/Unknwon/the-way-to-go_ZH_CN]"></outline>
+					<outline text="Goland，VScode"></outline>
+				</outline>
+				<outline text="Go特性">
+					<outline text="panic">
+						<outline text="发生panic的func认为程序不可运行了" _note="当 panic 被调用后 程序将立刻终止当前函数的执行，并开始回溯Goroutine的栈，运行任何被defer的函数。 若回溯到达Go程栈的顶端，程序就会终止。不过我们可以用内建的 recover 函数来重新或来取回Go程的控制权限并使其恢复正常执行"></outline>
+						<outline text="调用者可以通过recover继续恢复运行"></outline>
+						<outline text="没有revocer的panic可以导致程序退出" _note="终止失败的Go程而无需杀死其它正在执行的Go程"></outline>
+						<outline text="一些的panic">
+							<outline text="空指针访问"></outline>
+							<outline text="失败的类型断言"></outline>
+							<outline text="Slice越界"></outline>
+						</outline>
+						<outline text="fatal error" _note="fatal发生后是不能通过recover恢复的&#10;应该fatal并不是影响某个特定的goroutine">
+							<outline text="out of memory"></outline>
+							<outline text="concurrent map writes"></outline>
+							<outline text="all goroutines are asleep - deadlock!"></outline>
+						</outline>
+					</outline>
+					<outline text="goroutine">
+						<outline text="GPM模型" _note="M 内核级线程,goroutine就是跑在M之上&#10;G gorountine,Go的运行单位&#10;P Processor,处理器，可以通过runtime.GOMAXPROCS(N)设置个数"></outline>
+						<outline text="go func(){}" _note="使用go关键字启动线程&#10;相比c++的线程，轻量级&#10;调度消耗很小(百万个运行没有压力)&#10;内存消耗9K每个(十万个需要900M)&#10;可以成千上万的运行"></outline>
+					</outline>
+					<outline text="channel">
+						<outline text="无缓冲的channel" _note="同步交互数据，可以确保计算处于确定状态"></outline>
+						<outline text="带缓冲的channel"></outline>
+						<outline text="内存区别" _note="带有缓冲的chan内存会大于不带缓冲的chan"></outline>
+						<outline text="读取一个关闭的chan会立刻返回，写入一个关闭的chan会panic。chan会被自动回收，一般不用显示关闭"></outline>
+					</outline>
+					<outline text="function">
+						<outline text="函数是一等公民">
+							<outline text="匿名函数" _note="匿名函数即没有名字的函数，它以函数字面量的方式在行内进行声明"></outline>
+							<outline text="延时函数" _note="延时函数只在其父函数返回时被调用。多个延时函数会以栈的形式一个接一个被调用&#10;被defer的是一次函数调用，他的参数在defer声明的时候就已经确定了"></outline>
+							<outline text="高阶函数" _note="高阶函数可以接收或返回一个甚至多个函数。本质上来来讲，它用其他函数来完成工作。"></outline>
+							<outline text="闭包" _note="闭包可以记住其上下文环境中所有定义过的变量"></outline>
+							<outline text="缓存函数" _note="科里化(curry):只传递给函数一部分参数来调用它，让它返回一个函数去处理剩下的参数。"></outline>
+							<outline text="Futures 模式" _note="Futures就是指：有时候在你使用某一个值之前需要先对其进行计算。这种情况下，你就可以在另一个处理器上进行该值的计算，到使用时，该值就已经计算完毕了。s"></outline>
+						</outline>
+						<outline text="方法">
+							<outline text="值传递"></outline>
+							<outline text="指针传递"></outline>
+						</outline>
+						<outline text="多值返回"></outline>
+						<outline text="没有重载"></outline>
+						<outline text="没有默认参数"></outline>
+					</outline>
+					<outline text="struct">
+						<outline text="居然没有构造函数"></outline>
+						<outline text="field tag"></outline>
+						<outline text="interface">
+							<outline text="接口定义了一组方法（方法集），但是这些方法不包含（实现）代码：它们没有被实现（它们是抽象的）。接口里也不能包含变量"></outline>
+							<outline text="interface与nil" _note="不像大多数面向对象编程语言，在 Go 语言中接口可以有值，一个接口类型的变量或一个 接口值"></outline>
+							<outline text="interface{}与void*"></outline>
+							<outline text="并没有模版"></outline>
+						</outline>
+						<outline text="duck typing">
+							<outline text="如果行鸭子一样走路，像鸭子一样呱呱叫，那它就是一只鸭子" _note="相对于面向对象读作：我是XXX&#10;鸭子类型读作：我有XXX"></outline>
+							<outline text="Go 语言不是一种 “传统” 的面向对象编程语言：它里面没有类和继承的概念"></outline>
+							<outline text="类型不需要显式声明它实现了某个接口：接口被隐式地实现。多个类型可以实现同一个接口
+实现某个接口的类型（除了实现接口方法外）可以有其他的方法
+一个类型可以实现多个接口"></outline>
+							<outline text="动态方法调用是静态支持的"></outline>
+							<outline text="OO">
+								<outline text="封装（数据隐藏）：和别的 OO 语言有 4 个或更多的访问层次相比，Go 把它简化为了 2 层"></outline>
+								<outline text="继承：用组合实现：内嵌一个（或多个）包含想要的行为（字段和方法）的类型"></outline>
+								<outline text="多态：用接口实现：某个类型的实例可以赋给它所实现的任意接口类型的变量"></outline>
+							</outline>
+						</outline>
+					</outline>
+					<outline text="reflect"></outline>
+					<outline text="slice"></outline>
+					<outline text="ast"></outline>
+				</outline>
+				<outline text="并发">
+					<outline text="CSP:不要通过共享内存来通信，而应通过通信来共享内存"></outline>
+				</outline>
+				<outline text="例子">
+					<outline text="利用闭包和interface实现的sort"></outline>
+					<outline text="厨师与死锁"></outline>
+					<outline text="多线程计算"></outline>
+					<outline text="defer的执行时机（可能造成潜在的资源泄漏）"></outline>
+					<outline text="slice遍历的时候修改内容" _note="func SS() {&#10;	ok := false&#10;	//s := []int{1, 2, 3, 4, 5}&#10;	s := make([]int, 5, 5)&#10;	copy(s, []int{1, 2, 3, 4, 5})&#10;	//for _, v := range s {&#10;	for i := 0; i &lt; len(s); i++ {&#10;		v := s[i]&#10;		fmt.Println(v)&#10;		if !ok {&#10;			//s = append(s, []int{11, 22, 33, 44, 55, 66, 77, 88, 99, 00}...)&#10;			s = append(s, 1)&#10;			s[2] = 999&#10;&#10;			ok = true&#10;		}&#10;	}&#10;}"></outline>
+				</outline>
+			</outline>
+			<outline text="App服务器分享">
+				<outline text="无状态服务设计">
+					<outline text="可以并行，每次请求都是一个goroutine"></outline>
+					<outline text="数据都在数据库，程序只是负责操作数据"></outline>
+					<outline text="并不是所有请求都是完全独立"></outline>
+					<outline text="可以并行的部分在app服务器中执行，不能并行的部分通过数据库执行"></outline>
+					<outline text="分布式锁"></outline>
+					<outline text="例子">
+						<outline text="访问列表">
+							<outline text="不同线程判断重复计数可能存在问题"></outline>
+							<outline text="该用redis负责判断重复并且计数"></outline>
+						</outline>
+						<outline text="为每个新topic分配唯一ID">
+							<outline text="先判读topic是否存在"></outline>
+							<outline text="对于不存在的topic利用redis的incr指令获取唯一ID"></outline>
+							<outline text="对于并发的新topic可能获取两次不同的ID"></outline>
+							<outline text="利用redis的setnx指令实现分布式锁"></outline>
+							<outline text="轮询解锁"></outline>
+							<outline text="另一种方案 通过一致性协议raft实现"></outline>
+						</outline>
+					</outline>
+				</outline>
+				<outline text="基于消息队列的结偶">
+					<outline text="生产者把数据放入队列，消费者按需从队列中取出数据"></outline>
+					<outline text="消息队列选型 基于redis的两种消息队列"></outline>
+					<outline text="消息队列结偶了那些信息">
+						<outline text=" 生产者不知道，也不需要知道它的数据要给那个消费者处理"></outline>
+						<outline text="消费者也不知道数据是那个生产者发出的"></outline>
+						<outline text="消费者生产者之间只需要负责自己的事情就好了"></outline>
+					</outline>
+					<outline text="消息顺序性"></outline>
+					<outline text="例子">
+						<outline text="来自游戏服务器的消息分发">
+							<outline text="一个线程负责接收来自游戏的消息并发布到不同的topic"></outline>
+							<outline text="每个H5的玩家处理线程订阅相应的topic(s)"></outline>
+							<outline text="向游戏服务发送消息只是向消息队列中特定topic发送数据"></outline>
+						</outline>
+						<outline text="聊天处理">
+							<outline text="所有的的聊天消息都发送到聊天管理器"></outline>
+							<outline text="聊天管理器存储消息并发送到相应的topic中"></outline>
+							<outline text="每个登陆的app客户端都会订阅自己感兴趣的主题"></outline>
+							<outline text="对于app切换游戏/游戏区只是改变关注的主题"></outline>
+							<outline text="离线消息的处理 ">
+								<outline text="群聊处理"></outline>
+								<outline text="私聊处理"></outline>
+							</outline>
+						</outline>
+					</outline>
+				</outline>
+			</outline>
+		</outline>
+	</body>
+</opml>

@@ -41,7 +41,7 @@
 			
 			<section data-markdown>
 				## Go
-				#### Go特性介绍，和对GO的一些理解
+				#### Go特性介绍，和一些理解
 				- Go的学习资源
 				- Go的特性
 
@@ -74,6 +74,7 @@
 				- 支持GC,开发者不关心内存分配位置
 				- 初始化
 					- 包级别init函数 main.main函数的开始发生在所有init函数结束之后
+					- Go中的所有对象都有初始值
 				- goroutine的创建与销毁
 					<pre>
 						<code>
@@ -108,6 +109,7 @@
 					fatal error一般有out of memory，concurrent map writes，all goroutines are asleep - deadlock!
 			</section>
 
+			<section>
 			<section data-markdown>
 			<script type="text/template">
 				### go
@@ -130,6 +132,8 @@
 				G gorountine,Go的运行单位
 
 				P Processor,处理器，可以通过runtime.GOMAXPROCS(N)设置个数
+			</section>
+			<section><img data-src="https://pic3.zhimg.com/80/67f09d490f69eec14c1824d939938e14_hd.jpg"/></section>
 			</section>
 
 			<section data-markdown>
